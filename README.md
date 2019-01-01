@@ -32,11 +32,11 @@ Create a S3 bucket that will store all of the configuration files necessary.
    * If you are using iCloud, you can create an addressbook file by logging into iCloud, navigating to Contacts, click on the gear in the lower left, "Select All", click on the gear in the lower left, and "Export VCard...".
 * A graylist json file.
    * The minimal implementation is a file containing:
-       ```json
+       ```
        {}
        ```
 * A configuration file that will be referenced by the environment variable `PHONESYSTEM_CONFIG`.  A minimal implementation (that needs editing) is a file containing:
-       ```json
+       ```
        {
            "+10000000000": {
                "addressbook": "s3://bucketname/addressbook.vcf",
@@ -47,7 +47,6 @@ Create a S3 bucket that will store all of the configuration files necessary.
            }
        }
        ```
-
 
 ## References
 * [Build Your Own IVR with AWS Lambda, Amazon API Gateway and Twilio](https://www.twilio.com/blog/2015/09/build-your-own-ivr-with-aws-lambda-amazon-api-gateway-and-twilio.html)
