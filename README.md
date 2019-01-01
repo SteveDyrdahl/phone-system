@@ -24,6 +24,18 @@ Call is sent to [Twilio voicemail](https://www.twilio.com/labs/twimlets/voicemai
 Caller hears __failed_challenge_message__ and then the call is [ended](https://www.twilio.com/docs/voice/twiml/hangup).|Caller provided a response to the __challenge_question__ that was incorrect.
 
 
+## Setup
+### AWS S3
+Create a S3 bucket that will store all of the configuration files necessary.
+* A vCard](https://en.wikipedia.org/wiki/VCard) formatted file which will be used as the addressbook.
+   * The minimal implentation is an empty file.
+   * If you are using iCloud, you can create an addressbook file by logging into iCloud, navigating to Contacts, click on the gear in the lower left, "Select All", click on the gear in the lower left, and "Export VCard...".
+* A graylist json file.
+   * The minimal implementation is a file containing:
+       ```json
+       {}
+       ```
+
 ## References
 * [Build Your Own IVR with AWS Lambda, Amazon API Gateway and Twilio](https://www.twilio.com/blog/2015/09/build-your-own-ivr-with-aws-lambda-amazon-api-gateway-and-twilio.html)
 * [Hassle-Free Python Lambda Deployment](https://joarleymoraes.com/hassle-free-python-lambda-deployment)
