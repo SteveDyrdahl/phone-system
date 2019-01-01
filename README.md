@@ -32,11 +32,12 @@ Create a S3 bucket that will store all of the configuration files necessary.
    * If you are using iCloud, you can create an addressbook file by logging into iCloud, navigating to Contacts, click on the gear in the lower left, "Select All", click on the gear in the lower left, and "Export VCard...".
 * A graylist json file.
    * The minimal implementation is a file containing:
-       ```
+       ```json
        {}
        ```
-* A configuration file that will be referenced by the environment variable `PHONESYSTEM_CONFIG`.  A minimal implementation (that needs editing) is a file containing:
-       ```
+* A configuration file that will be referenced by the environment variable `PHONESYSTEM_CONFIG`.
+   * A minimal implementation (that needs editing) is a file containing:
+       ```json
        {
            "+10000000000": {
                "addressbook": "s3://bucketname/addressbook.vcf",
@@ -47,6 +48,13 @@ Create a S3 bucket that will store all of the configuration files necessary.
            }
        }
        ```
+   * `+10000000000` will be replaced with your Twilio phone number.
+   * `bucketname` will be replaced with the name of the S3 bucket where you setup to store the configuration files.
+   * `addressbook.vcf` will be replaced with the key of the addressbook file you created and uploaded to the S3 bucket.
+   * `graylist.json` will be replaced with the key of the graylist file you created and uploaded to the S3 bucket.
+   * `/prod/phonesystem` will be replaced with the relative path to the API that will be setup using Amazon's API Gateway (more information below).
+   * `555-555-5555` will be replaced with the phone number that you want calls forwarded to.
+   * `simple@example.com` will be replaced with the email address you want voicemail notifications be sent to.
 
 ## References
 * [Build Your Own IVR with AWS Lambda, Amazon API Gateway and Twilio](https://www.twilio.com/blog/2015/09/build-your-own-ivr-with-aws-lambda-amazon-api-gateway-and-twilio.html)
