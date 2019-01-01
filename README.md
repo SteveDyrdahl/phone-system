@@ -33,7 +33,8 @@ Create a S3 bucket that will store all of the configuration files necessary.
 * A graylist json file.
    * The minimal implementation is a file containing:
        ```
-       {}
+       {
+       }
        ```
 * A configuration file that will be referenced by the environment variable `PHONESYSTEM_CONFIG`.  A minimal implementation (that needs editing) is a file containing:
        ```
