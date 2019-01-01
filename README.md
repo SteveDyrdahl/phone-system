@@ -1,6 +1,6 @@
 # phone-system
 ## Overview
-This phone system is for handling calls incoming to a Twilio phone number and routing the call to different end states depending on a number of factors.  An understanding of Twilio, AWS, JSON, and Python will be needed to successfully setup your own instance.  Use at your own risk.  Missed phone calls, AWS charges, Twilio charges, etc. are solely your responsibility.
+This phone system is for handling calls incoming to a Twilio phone number and routing the call to different end states depending on a number of factors.  An understanding of Twilio, AWS, JSON, and Python 3 will be needed to successfully setup your own instance.  Use at your own risk.  Missed phone calls, AWS charges, Twilio charges, etc. are solely your responsibility.
 
 The table below summarizes the different possible end states for an incoming call and the the different ways that end state can be arrived at.  The table references the following: 
 * __from__ The phone number of the caller which of course can be [spoofed](https://en.wikipedia.org/wiki/Caller_ID_spoofing).
