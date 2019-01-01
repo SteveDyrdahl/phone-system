@@ -1,6 +1,6 @@
 # phone-system
 ## Overview
-This phone system is for handling calls incoming to a Twilio phone number and routing the call to different end states depending on a number of factors.  An understanding of Twilio, AWS, JSON, and Python 3 will be needed to successfully setup your own instance.  Use at your own risk.  Missed phone calls, AWS charges, Twilio charges, etc. are solely your responsibility.
+This phone system is for handling calls incoming to a Twilio phone number and routing the call to different end states depending on a number of factors.  An understanding of Twilio, AWS (S3, Lambda, API Gateway, CloudWatch, IAM) , JSON, and Python 3 will be needed to successfully setup your own instance.  Use at your own risk.  Missed phone calls, AWS charges, Twilio charges, etc. are solely your responsibility.
 
 The table below summarizes the different possible end states for an incoming call and the the different ways that end state can be arrived at.  The table references the following: 
 * __from__ The phone number of the caller which of course can be [spoofed](https://en.wikipedia.org/wiki/Caller_ID_spoofing).
@@ -26,7 +26,7 @@ Caller hears __failed_challenge_message__ and then the call is [ended](https://w
 
 ## Setup
 ### AWS S3
-Create a S3 bucket that will store all of the configuration files necessary.
+Create a S3 bucket that will store all of the configuration files necessary.  The Lamdba function 
 * A vCard](https://en.wikipedia.org/wiki/VCard) formatted file which will be used as the addressbook.
    * The minimal implentation is an empty file.
    * If you are using iCloud, you can create an addressbook file by logging into iCloud, navigating to Contacts, click on the gear in the lower left, "Select All", click on the gear in the lower left, and "Export VCard...".
@@ -43,19 +43,32 @@ Create a S3 bucket that will store all of the configuration files necessary.
                "addressbook": "s3://bucketname/addressbook.vcf",
                "gatheraction": "/prod/phonesystem",
                "graylistlocation": "s3://bucketname/graylist.json",
+               "updategraylist": "True",
                "phone": "555-555-5555",
                "voicemail": "simple@example.com"
            }
        }
        ```
-   * `+10000000000` will be replaced with your Twilio phone number.
-   * `bucketname` will be replaced with the name of the S3 bucket where you setup to store the configuration files.
-   * `addressbook.vcf` will be replaced with the key of the addressbook file you created and uploaded to the S3 bucket.
-   * `graylist.json` will be replaced with the key of the graylist file you created and uploaded to the S3 bucket.
-   * `/prod/phonesystem` will be replaced with the relative path to the API that will be setup using Amazon's API Gateway (more information below).
-   * `555-555-5555` will be replaced with the phone number that you want calls forwarded to.
-   * `simple@example.com` will be replaced with the email address you want voicemail notifications be sent to.
+   * The following edits are needed to the above example:
+      * `+10000000000` will be replaced with your Twilio phone number.
+      * `bucketname` will be replaced with the name of the S3 bucket where you setup to store the configuration files.
+      * `addressbook.vcf` will be replaced with the key of the addressbook file you created and uploaded to the S3 bucket.
+      * `graylist.json` will be replaced with the key of the graylist file you created and uploaded to the S3 bucket.
+      * `/prod/phonesystem` will be replaced with the relative path to the API that will be setup using Amazon's API Gateway (more information below).
+      * `555-555-5555` will be replaced with the phone number that you want calls forwarded to.
+      * `simple@example.com` will be replaced with the email address you want voicemail notifications be sent to.
+   * Other notes:
+      * Technically `updategraylist` is not required.  However, it is required with a value of `True` if you want the count values to persist.
+      * Other functionality (blacklist, forwardlist, multiple phone number support) are not included in this minimal example.  Example syntax can be found in the unit tests.
 
+### AWS Lambda
+Where the code runs.
+
+### AWS API Gateway
+Call AWS Lambda
+
+### AWS CloudWatch
+Find logs.
 ## References
 * [Build Your Own IVR with AWS Lambda, Amazon API Gateway and Twilio](https://www.twilio.com/blog/2015/09/build-your-own-ivr-with-aws-lambda-amazon-api-gateway-and-twilio.html)
 * [Hassle-Free Python Lambda Deployment](https://joarleymoraes.com/hassle-free-python-lambda-deployment)
