@@ -1,0 +1,31 @@
+{
+    "+10000000000": {
+        "addressbook": "phonesystem/tests/test_addressbook.vcf",
+        "blacklist": [
+            "+16666666666"
+        ],
+        "forwardlist": {
+            "+18888888888": "111-222-3333"
+        },
+        "gatheraction": "/dev/phonesystem",
+        "graylistlocation": "phonesystem/tests/test_callhandler_graylist.json",
+        "phone": "123-123-0000",
+        "updategraylist": "False",
+        "voicemail": "foo@bar.com"
+    },
+    "+10000000001": {
+        "addressbook": "phonesystem/tests/test_addressbook2.vcf",
+        "forwardlist": {
+            "+18888888888": "111-222-3332"
+        },
+        "gatheraction": "/dev/phonesystem2",
+        "graylistlocation": "phonesystem/tests/test_callhandler_graylist2.json",
+        "phone": "123-123-0002",
+        "updategraylist": "False",
+        "voicemail": "foo2@bar.com"
+    },
+    "blacklist": [
+        "+16666666662",
+        "+16666666663"
+    ]
+}
