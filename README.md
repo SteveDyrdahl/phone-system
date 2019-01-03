@@ -1,6 +1,6 @@
 # phone-system
 ## Overview
-This phone system is for handling calls incoming to a Twilio phone number and routing the call to different end states depending on a number of factors.  An understanding of Twilio, AWS (S3, Lambda, API Gateway, CloudWatch, IAM), JSON, and Python3 will be needed to successfully setup your own instance.  Use at your own risk.  Missed phone calls, AWS charges, Twilio charges, etc. are solely your responsibility.
+This phone system is for handling calls incoming to a Twilio phone number and routing the call to different end states depending on a number of factors.  This allows calls from known callers to be handled differently, to never accept calls from certain callers, and to have unknown callers verify they are an actual person by providing them with a challenge question.  An understanding of Twilio, AWS (S3, Lambda, API Gateway, CloudWatch, IAM), JSON, and Python3 will be needed to successfully setup your own instance.  Use at your own risk.  Missed phone calls, AWS charges, Twilio charges, etc. are solely your responsibility.
 
 The table below summarizes the different possible end states for an incoming call and the the different ways that end state can be arrived at.  The table references the following: 
 * __from__ The phone number of the caller. This value of course can be [spoofed](https://en.wikipedia.org/wiki/Caller_ID_spoofing).
@@ -25,6 +25,8 @@ Caller hears __failed_challenge_message__ and then the call is [ended](https://w
 
 
 ## Setup
+These setup instructions will cover some/most of the specific information needed for setup.  They will not cover all the details needed to understand/setup your AWS environment (in particular all the permissions related settings).  The reference section provides links to additional information and "Build Your Own IVR..." in particular is useful as that was the starting point for this project.
+
 ### AWS S3
 Create a S3 bucket that will store all of the configuration files necessary.  The Lamdba function (setup information below) will need read and write access to this bucket.
 * A [vCard](https://en.wikipedia.org/wiki/VCard) formatted file which will be used as the addressbook.
@@ -62,13 +64,51 @@ Create a S3 bucket that will store all of the configuration files necessary.  Th
       * Other functionality (blacklist, forwardlist, multiple phone number support) are not included in this minimal example.  Example syntax can be found in the unit tests.
 
 ### AWS Lambda
-Where the code runs.
+You will need to create a Python 3 function to run this code.
+* You will need to use the "Upload a file from Amazon S3" feature as the zip file will be too large to upload.  You can use the `dist-prepare.sh` and `dist-refresh.sh` scripts to create a zip file that is compatible with AWS Lambda.  Both scripts will need to be edited to set variables needed for execution.
+* The Handler should be set to `phonesystem.callhandler.lambda_handler`.
+* An environment variable `PHONESYSTEM_CONFIG` needs to exist with a value of `s3://bucketname/config_filename`
+* The Timeout value might need bumped up.  (e.g. 15 seconds)
 
 ### AWS API Gateway
-Call AWS Lambda
+You will need to create an API that is the endpoint called by Twilio that will call the Lambda Function.  In this API, create a Resource and add a POST Method with an `Integration Type` of `Lambda Function`.  Twilio calls are all XML based which requires mapping in and out to be setup.  The "Build Your Own IVR..." reference below will provide details needed to understand what is going on and why.
+* Integration Request
+   * `Content Type` = `application/x-www-form-urlencoded`
+   * Template
+      ```
+      {
+         "body" : $input.json('$')
+      }
+      ```
+* Integration Response
+   * `Content Type` = `application/xml`
+   * Template
+      ```
+      #set($inputRoot = $input.path('$')) 
+      $inputRoot
+      ```
+* Method Response
+   * `Content Type` = `application/xml`
+
+The URL pattern for calling this API Gateway:<br)
+`https://{restapi_id}.execute-api.{region}.amazonaws.com/{stage_name}/`
 
 ### AWS CloudWatch
-Find logs.
+Logging will show up in CloudWatch.
+
+### Twilio
+On the configuration page for your phone number in the "Voice & Fax" section you need to configure values for "A CALL COMES IN"
+* Select `Webhook` in the first drop down.
+* Enter the URL from the above API Gateway into the text box.
+* Select 'HTTP POST' in the second drop down.
+It is also suggested to configure values for the "PRIMARY HANDLER FAILS" section.  In the event that an unexpected error occurs, the call can still get routed to a valid end state.  Otherwise the caller will hear the default error message "an application error has occured".
+* Select `Webhook` in the first drop down.
+* Enter `http://twimlets.com/voicemail?Email=simple@example.com&Transcribe=false` into the text box. Make sure to substitute your email address into the example URL provided.
+* Select 'HTTP POST' in the second drop down.
+
+## Trouble Shooting
+This section needs written.
+
 ## References
 * [Build Your Own IVR with AWS Lambda, Amazon API Gateway and Twilio](https://www.twilio.com/blog/2015/09/build-your-own-ivr-with-aws-lambda-amazon-api-gateway-and-twilio.html)
 * [Hassle-Free Python Lambda Deployment](https://joarleymoraes.com/hassle-free-python-lambda-deployment)
