@@ -20,6 +20,8 @@
         },
         "gatheraction": "/dev/phonesystem2",
         "graylistlocation": "phonesystem/tests/test_callhandler_graylist2.json",
+        "challenge_prefix": "to be connected with bob, enter the digits ",
+        "challenge_suffix": " followed by #",
         "phone": "123-123-0002",
         "updategraylist": "False",
         "voicemail": "foo2@bar.com"

@@ -30,6 +30,8 @@ class HandlerConfig:
     _updategraylist = False
     _graylistlocation = ''
     _graylist = {}
+    _challenge_prefix = 'enter '
+    _challenge_suffix = ' followed by pound'
     _failedchallengemsg = 'Unfortunately you have failed the challenge test. Good bye.'
     _failedchallenge3plusmsg = 'Unfortunately you have failed the challenge test three consecutive times ' \
                                'and have been added to the do not accept list. Good bye.'
@@ -53,6 +55,10 @@ class HandlerConfig:
         # TODO Currently if two different configurations use the same graylist, they will over-ride each other.
         self._graylistlocation = config['graylistlocation']
         self._graylist = json.loads(util.get_file(self._graylistlocation))
+        if 'challenge_prefix' in config:
+            self._challenge_prefix = config['challenge_prefix']
+        if 'challenge_suffix' in config:
+            self._challenge_suffix = config['challenge_suffix']
         if 'failedchallengemsg' in config:
             self._failedchallengemsg = config['failedchallengemsg']
         if 'failedchallenge3plusmsg' in config:
@@ -138,6 +144,9 @@ class HandlerConfig:
         else:
             return self._failedchallengemsg
 
+    def get_challenge_msg(self, value: str):
+        return self._challenge_prefix + value[0] + ' ' + value[1] + ' ' + value[2] + self._challenge_suffix
+
     def _update_graylist(self, from_: str, unanswered_challenge: int, failed_challenge: int):
         self._graylist[from_] = {'unanswered_challenge': unanswered_challenge, 'failed_challenge': failed_challenge}
         if self._updategraylist:
@@ -190,11 +199,11 @@ class CallHandler:
             return twiliohelper.getrejectresponse()
         # Challenge the caller to enter a numerical value on their phone.
         else:
-            value = CallHandler._getchallengevalue(from_)
+            value: str = CallHandler._getchallengevalue(from_)
             # No digits provided indicates initial request, prompt the user for challenge input.
             if digits is None:
                 config.increment_unanswered_challenge(from_)
-                return twiliohelper.getsayandgather(CallHandler._getchallengemsg(value), config.get_gatheraction())
+                return twiliohelper.getsayandgather(config.get_challenge_msg(value), config.get_gatheraction())
             # Caller correctly entered the challenge value.
             elif digits == value:
                 config.passed_challenge(from_)
@@ -212,11 +221,6 @@ class CallHandler:
             y = x.split("=")
             key_value_pairs[y[0]] = urllib.parse.unquote(y[1])
         return key_value_pairs
-
-    # TODO: Make this message configurable.
-    @staticmethod
-    def _getchallengemsg(value: str):
-        return 'enter ' + value[0] + ' ' + value[1] + ' ' + value[2] + ' followed by pound'
 
     @staticmethod
     def _getchallengevalue(caller: str):

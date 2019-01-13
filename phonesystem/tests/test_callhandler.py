@@ -110,7 +110,7 @@ class TestCallHandler(unittest.TestCase):
         e = {'body': s1}
         xml = phonesystem.callhandler.lambda_handler(e, e)
         expected = '<Response><Gather numDigits="3" action="/dev/phonesystem2"><Pause />' \
-                   '<Say>enter 7 7 2 followed by pound</Say></Gather>' \
+                   '<Say>to be connected with bob, enter the digits 7 7 2 followed by #</Say></Gather>' \
                    '<Hangup /></Response>'
         self.assertIsNot(xml.find(expected), -1, xml + ' does not contain ' + expected)
 
