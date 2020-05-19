@@ -148,7 +148,8 @@ class HandlerConfig:
         return self._challenge_prefix + value[0] + ' ' + value[1] + ' ' + value[2] + self._challenge_suffix
 
     def _update_graylist(self, from_: str, unanswered_challenge: int, failed_challenge: int):
-        self._graylist[from_] = {'unanswered_challenge': unanswered_challenge, 'failed_challenge': failed_challenge}
+        self._graylist[from_] = {'unanswered_challenge': unanswered_challenge, 'failed_challenge': failed_challenge,
+                                'last_updated': datetime.now().strftime("%Y-%m-%d %H:%M")}
         if self._updategraylist:
             util.put_file(self._graylistlocation, json.dumps(self._graylist, sort_keys=True, indent=4))
 
